@@ -1,4 +1,4 @@
-# image-template
+# MightyDisciple Bazzite DX
 
 This repository is meant to be a template for building your own custom [bootc](https://github.com/bootc-dev/bootc) image. This template is the recommended way to make customizations to any image published by the Universal Blue Project.
 
@@ -187,7 +187,7 @@ Linting:
 
 These are all sourced from the `image-template.env` file.
 
-- `image_name`: The name of the image (default: "image-template").
+- `image_name`: The name of the image (configured as "bazzite-dx").
 - `default_tag`: The default tag for the image (default: "latest").
 - `bib_image`: The Bootc Image Builder (BIB) image (default: "quay.io/centos-bootc/bootc-image-builder:latest").
 
