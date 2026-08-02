@@ -1,5 +1,13 @@
 # MightyDisciple Bazzite DX
 
+This image includes a native Looking Glass B7 client built for Wayland and
+PipeWire. The client is installed directly in the system image; no Distrobox is
+needed at runtime. Enable Bazzite's bundled `kvmfr` module once after deployment:
+
+```bash
+ujust setup-virtualization kvmfr
+```
+
 This repository is meant to be a template for building your own custom [bootc](https://github.com/bootc-dev/bootc) image. This template is the recommended way to make customizations to any image published by the Universal Blue Project.
 
 # Community
