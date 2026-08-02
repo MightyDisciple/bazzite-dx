@@ -5,16 +5,24 @@ PipeWire. The client is installed directly in the system image; no Distrobox is
 needed at runtime. Enable Bazzite's bundled `kvmfr` module once after deployment:
 
 ```bash
-ujust setup-virtualization kvmfr
+ujust workstation-virtualization kvmfr
 ```
 
-Toggle the workstation's dedicated RTX 5080 between the Bazzite host and a
-VFIO guest (a reboot is required after `on` or `off`):
+Open the unified workstation virtualization menu:
 
 ```bash
-ujust rtx5080-vfio on
-ujust rtx5080-vfio off
-ujust rtx5080-vfio status
+ujust workstation-virtualization
+```
+
+The same actions can be called directly (a reboot is required after `rtx-on`
+or `rtx-off`):
+
+```bash
+ujust workstation-virtualization rtx-on
+ujust workstation-virtualization rtx-off
+ujust workstation-virtualization status
+ujust workstation-virtualization kvmfr
+ujust workstation-virtualization setup
 ```
 
 This repository is meant to be a template for building your own custom [bootc](https://github.com/bootc-dev/bootc) image. This template is the recommended way to make customizations to any image published by the Universal Blue Project.
