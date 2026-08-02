@@ -8,6 +8,15 @@ needed at runtime. Enable Bazzite's bundled `kvmfr` module once after deployment
 ujust setup-virtualization kvmfr
 ```
 
+Toggle the workstation's dedicated RTX 5080 between the Bazzite host and a
+VFIO guest (a reboot is required after `on` or `off`):
+
+```bash
+ujust rtx5080-vfio on
+ujust rtx5080-vfio off
+ujust rtx5080-vfio status
+```
+
 This repository is meant to be a template for building your own custom [bootc](https://github.com/bootc-dev/bootc) image. This template is the recommended way to make customizations to any image published by the Universal Blue Project.
 
 # Community
