@@ -1,0 +1,189 @@
+#!/usr/bin/bash
+set -euo pipefail
+
+config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/borgmatic"
+config_file="$config_dir/config.yaml"
+passphrase_file="$config_dir/repository-passphrase"
+ssh_dir="$HOME/.ssh"
+ssh_key="$ssh_dir/borgwarehouse"
+user_systemd_dir="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user"
+
+die() {
+    echo "Error: $*" >&2
+    exit 1
+}
+
+require_user() {
+    [[ $EUID -ne 0 ]] || die "Run this as your normal user, without sudo."
+}
+
+require_config() {
+    [[ -r $config_file ]] || die "No backup configuration found. Run: ujust backup-setup"
+    [[ -r $passphrase_file ]] || die "The Borg passphrase file is missing: $passphrase_file"
+}
+
+setup_backup() {
+    require_user
+    echo "First create a repository/user in BorgWarehouse."
+    echo "Paste its complete Borg SSH repository URL below."
+    echo "Example: ssh://borg@10.40.0.10:22/./repositories/mightydisciple"
+    read -r -p "Repository URL: " repository
+    [[ $repository == ssh://* ]] || die "Expected an ssh:// Borg repository URL."
+
+    install -d -m 0700 "$config_dir" "$ssh_dir" "$user_systemd_dir"
+
+    if [[ ! -f $ssh_key ]]; then
+        echo
+        echo "Creating a dedicated SSH key for BorgWarehouse..."
+        ssh-keygen -t ed25519 -f "$ssh_key" -N '' -C "borgwarehouse-${USER}@${HOSTNAME}"
+        echo
+        echo "Add this public key to the BorgWarehouse repository:"
+        cat "$ssh_key.pub"
+        echo
+        read -r -p "Press Enter after the key has been added in BorgWarehouse..." _
+    fi
+
+    echo
+    echo "Choose a strong repository passphrase. Save it in your password manager"
+    echo "together with the private SSH key at $ssh_key. Both are needed for disaster recovery."
+    read -r -s -p "Repository passphrase: " passphrase
+    echo
+    [[ -n $passphrase ]] || die "The passphrase may not be empty."
+    read -r -s -p "Repeat passphrase: " passphrase_repeat
+    echo
+    [[ $passphrase == "$passphrase_repeat" ]] || die "The passphrases do not match."
+    umask 077
+    printf '%s\n' "$passphrase" > "$passphrase_file"
+    unset passphrase passphrase_repeat
+
+    cat > "$config_file" <<EOF
+source_directories:
+  - $HOME
+
+repositories:
+  - path: $repository
+    label: truenas
+
+ssh_command: ssh -i $ssh_key -o IdentitiesOnly=yes
+encryption_passphrase: "{credential file $passphrase_file}"
+compression: auto,zstd
+archive_name_format: 'mightydisciple-home-{now}'
+
+exclude_caches: true
+exclude_patterns:
+  - '$HOME/.cache'
+  - '$HOME/.local/share/Trash'
+  - '$HOME/.local/share/Steam/steamapps/shadercache'
+  - '$HOME/.var/app/*/cache'
+
+keep_daily: 7
+keep_weekly: 4
+keep_monthly: 12
+keep_yearly: 3
+
+checks:
+  - name: repository
+    frequency: 1 month
+  - name: archives
+    frequency: 1 month
+check_last: 3
+EOF
+    chmod 0600 "$config_file" "$passphrase_file"
+
+    cat > "$user_systemd_dir/mightydisciple-backup.service" <<'EOF'
+[Unit]
+Description=Back up the complete home directory to BorgWarehouse
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/mightydisciple-backup create
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+EOF
+
+    cat > "$user_systemd_dir/mightydisciple-backup.timer" <<'EOF'
+[Unit]
+Description=Daily Borg home backup
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+RandomizedDelaySec=30m
+
+[Install]
+WantedBy=timers.target
+EOF
+
+    systemctl --user daemon-reload
+    systemctl --user enable --now mightydisciple-backup.timer
+
+    echo
+    echo "Configuration written to $config_file"
+    echo "Testing SSH and repository access..."
+    if ! borgmatic --config "$config_file" repo-info; then
+        echo
+        read -r -p "Repository is not initialized. Initialize it now? [y/N] " initialize
+        if [[ $initialize == [yY] ]]; then
+            borgmatic --config "$config_file" repo-create --encryption repokey-blake2
+        else
+            die "Repository setup is incomplete."
+        fi
+    fi
+    echo "Repository is ready. Start the first backup with: ujust backup-now"
+}
+
+create_backup() {
+    require_user
+    require_config
+    borgmatic --config "$config_file" create --stats
+    borgmatic --config "$config_file" prune
+    borgmatic --config "$config_file" compact
+    borgmatic --config "$config_file" check
+}
+
+list_backups() {
+    require_user
+    require_config
+    borgmatic --config "$config_file" repo-list
+}
+
+check_backup() {
+    require_user
+    require_config
+    borgmatic --config "$config_file" check
+}
+
+restore_home() {
+    require_user
+    require_config
+    [[ ${XDG_SESSION_TYPE:-tty} == tty ]] || die "Log out and run this from a text console (Ctrl+Alt+F3)."
+    [[ $(id -u) -eq 1000 ]] || die "This restore expects UID 1000; current UID is $(id -u)."
+    [[ $HOME == /var/home/* || $HOME == /home/* ]] || die "Unexpected home path: $HOME"
+
+    echo "This extracts the latest complete home backup over $HOME."
+    echo "Use this on a fresh Bazzite installation while the desktop session is logged out."
+    read -r -p "Type RESTORE to continue: " confirmation
+    [[ $confirmation == RESTORE ]] || die "Restore cancelled."
+
+    borgmatic --config "$config_file" extract \
+        --archive latest \
+        --path "${HOME#/}" \
+        --destination / \
+        --progress
+
+    echo "Restoring SELinux labels..."
+    sudo restorecon -RF "$HOME"
+    echo "Restore complete. Reboot before logging into the desktop."
+}
+
+case "${1:-}" in
+    setup) setup_backup ;;
+    create) create_backup ;;
+    list) list_backups ;;
+    check) check_backup ;;
+    restore) restore_home ;;
+    *) die "Usage: $0 {setup|create|list|check|restore}" ;;
+esac

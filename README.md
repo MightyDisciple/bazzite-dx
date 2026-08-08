@@ -25,6 +25,37 @@ ujust workstation-virtualization kvmfr
 ujust workstation-virtualization setup
 ```
 
+## Complete home backup
+
+The image includes Borg and borgmatic for encrypted, deduplicated home backups
+to a BorgWarehouse repository on TrueNAS SCALE. Create the repository in
+BorgWarehouse first, then configure this machine once:
+
+```bash
+ujust backup-setup
+ujust backup-now
+```
+
+Daily backups are enabled as a user systemd timer. Inspect or verify them with:
+
+```bash
+ujust backup-list
+ujust backup-check
+```
+
+On a fresh installation, use the same username and UID (1000), restore the
+BorgWarehouse SSH key and repository passphrase from separate safe storage,
+switch to a text console, and run:
+
+```bash
+ujust restore-home
+```
+
+The default backup covers the complete home directory. It only excludes caches,
+trash, Steam shader caches, and Flatpak caches. The repository passphrase and
+the BorgWarehouse private SSH key must be kept outside the repository (for
+example in a password manager and an offline recovery copy).
+
 This repository is meant to be a template for building your own custom [bootc](https://github.com/bootc-dev/bootc) image. This template is the recommended way to make customizations to any image published by the Universal Blue Project.
 
 # Community
