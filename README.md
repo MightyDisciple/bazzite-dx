@@ -43,18 +43,19 @@ ujust backup-list
 ujust backup-check
 ```
 
-On a fresh installation, use the same username and UID (1000), restore the
-BorgWarehouse SSH key and repository passphrase from separate safe storage,
-switch to a text console, and run:
+On a fresh installation, use the same username and UID (1000), generate a new
+per-machine SSH key with `ujust backup-setup`, assign that public key to the old
+repository in BorgWarehouse, enter its passphrase, switch to a text console,
+and run:
 
 ```bash
 ujust restore-home
 ```
 
 The default backup covers the complete home directory. It only excludes caches,
-trash, Steam shader caches, and Flatpak caches. The repository passphrase and
-the BorgWarehouse private SSH key must be kept outside the repository (for
-example in a password manager and an offline recovery copy).
+trash, Steam shader caches, and Flatpak caches. Keep the repository URL and
+repository passphrase in a password manager. The per-machine SSH key is only an
+access credential and can be replaced from the BorgWarehouse administration UI.
 
 This repository is meant to be a template for building your own custom [bootc](https://github.com/bootc-dev/bootc) image. This template is the recommended way to make customizations to any image published by the Universal Blue Project.
 

@@ -24,28 +24,27 @@ require_config() {
 
 setup_backup() {
     require_user
-    echo "First create a repository/user in BorgWarehouse."
-    echo "Paste its complete Borg SSH repository URL below."
-    echo "Example: ssh://borg@10.40.0.10:22/./repositories/mightydisciple"
-    read -r -p "Repository URL: " repository
-    [[ $repository == ssh://* ]] || die "Expected an ssh:// Borg repository URL."
-
     install -d -m 0700 "$config_dir" "$ssh_dir" "$user_systemd_dir"
 
     if [[ ! -f $ssh_key ]]; then
         echo
         echo "Creating a dedicated SSH key for BorgWarehouse..."
         ssh-keygen -t ed25519 -f "$ssh_key" -N '' -C "borgwarehouse-${USER}@${HOSTNAME}"
-        echo
-        echo "Add this public key to the BorgWarehouse repository:"
-        cat "$ssh_key.pub"
-        echo
-        read -r -p "Press Enter after the key has been added in BorgWarehouse..." _
     fi
 
     echo
-    echo "Choose a strong repository passphrase. Save it in your password manager"
-    echo "together with the private SSH key at $ssh_key. Both are needed for disaster recovery."
+    echo "Create a new repository in BorgWarehouse for this machine."
+    echo "Use this public SSH key:"
+    cat "$ssh_key.pub"
+    echo
+    echo "Recommended settings: alias ${HOSTNAME}, alert 2 days, append-only disabled."
+    echo "After creating it, copy its complete LAN repository URL."
+    read -r -p "Repository URL: " repository
+    [[ $repository == ssh://* ]] || die "Expected an ssh:// Borg repository URL."
+
+    echo
+    echo "Choose a strong repository passphrase and save it in Bitwarden."
+    echo "The per-machine SSH key can be replaced in BorgWarehouse after hardware loss."
     read -r -s -p "Repository passphrase: " passphrase
     echo
     [[ -n $passphrase ]] || die "The passphrase may not be empty."
