@@ -33,7 +33,8 @@ setup_backup() {
     fi
 
     echo
-    echo "Create a new repository in BorgWarehouse for this machine."
+    echo "Create a repository in BorgWarehouse, or edit an existing repository"
+    echo "when this machine replaces the computer that previously used it."
     echo "Use this public SSH key:"
     cat "$ssh_key.pub"
     echo
@@ -43,7 +44,8 @@ setup_backup() {
     [[ $repository == ssh://* ]] || die "Expected an ssh:// Borg repository URL."
 
     echo
-    echo "Choose a strong repository passphrase and save it in Bitwarden."
+    echo "For a new repository, choose a strong passphrase and save it in Bitwarden."
+    echo "For an existing repository, enter its existing passphrase from Bitwarden."
     echo "The per-machine SSH key can be replaced in BorgWarehouse after hardware loss."
     read -r -s -p "Repository passphrase: " passphrase
     echo
@@ -74,6 +76,8 @@ exclude_patterns:
   - '$HOME/.local/share/Trash'
   - '$HOME/.local/share/Steam/steamapps/shadercache'
   - '$HOME/.var/app/*/cache'
+  - '$ssh_key'
+  - '$ssh_key.pub'
 
 keep_daily: 7
 keep_weekly: 4

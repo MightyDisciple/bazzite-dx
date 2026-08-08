@@ -56,6 +56,8 @@ The default backup covers the complete home directory. It only excludes caches,
 trash, Steam shader caches, and Flatpak caches. Keep the repository URL and
 repository passphrase in a password manager. The per-machine SSH key is only an
 access credential and can be replaced from the BorgWarehouse administration UI.
+It is deliberately excluded from the home archive so a restore cannot overwrite
+the new machine's key with the previous machine's key.
 
 This repository is meant to be a template for building your own custom [bootc](https://github.com/bootc-dev/bootc) image. This template is the recommended way to make customizations to any image published by the Universal Blue Project.
 
