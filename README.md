@@ -6,6 +6,9 @@ Personal Bazzite DX image based on
 It adds the workstation, development, virtualization, and recovery tools used
 across MightyDisciple machines while keeping user data outside the image.
 
+See [HANDLEIDING.md](HANDLEIDING.md) for the short Dutch setup, backup, and
+recovery guide.
+
 ## Included software
 
 Native packages and integrations:
