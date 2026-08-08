@@ -32,15 +32,17 @@ BorgWarehouse repository on TrueNAS SCALE. Vorta is the desktop interface for
 selecting the home directory, setting exclusions and retention, scheduling
 backups, browsing archives, and restoring files.
 
-First generate the machine's BorgWarehouse SSH key:
+Open the complete backup menu:
 
 ```bash
-ujust backup-key
+ujust backup
 ```
 
-Assign the displayed public key to a repository in BorgWarehouse. Then open
-Vorta, add the complete `ssh://` repository URL, select `Home` as the source,
-and configure the schedule and retention in the GUI. Recommended exclusions:
+The menu creates or displays the BorgWarehouse SSH key, explains the setup, and
+starts complete-home recovery. Open Vorta normally from the application menu.
+Assign the displayed public key to a repository in BorgWarehouse, add its
+complete `ssh://` URL to Vorta, select `Home` as the source, and configure the
+schedule and retention in the GUI. Recommended exclusions:
 
 - `.cache`
 - `.local/share/Trash`
@@ -50,13 +52,10 @@ and configure the schedule and retention in the GUI. Recommended exclusions:
 - `.ssh/borgwarehouse.pub`
 
 Use Vorta for normal restores. For a complete home recovery on a fresh
-installation, use the same username, run `ujust backup-key`, assign the new
-public key to the existing repository, log out of the desktop, switch to a text
-console, and run:
-
-```bash
-ujust restore-home
-```
+installation, use the same username, choose the SSH-key option under
+`ujust backup`, assign the new public key to the existing repository, log out
+of the desktop, switch to a text console, and run `ujust backup` again. Choose
+the complete-home restore option from its menu.
 
 Keep the repository URL and repository passphrase in a password manager. The
 per-machine SSH key is only an access credential and can be replaced from the

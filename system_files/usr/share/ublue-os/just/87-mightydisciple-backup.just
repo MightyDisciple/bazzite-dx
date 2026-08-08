@@ -1,9 +1,4 @@
-# Prepare BorgWarehouse access and recover a complete home. Use Vorta for
-# normal backup configuration, scheduling, browsing, and restores.
+# Open the menu for BorgWarehouse access and full home recovery.
 [group("MightyDisciple")]
-backup-key:
-    /usr/libexec/mightydisciple-backup key
-
-[group("MightyDisciple")]
-restore-home:
-    /usr/libexec/mightydisciple-backup restore
+backup:
+    /usr/libexec/mightydisciple-backup menu

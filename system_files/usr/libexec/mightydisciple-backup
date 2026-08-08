@@ -27,6 +27,48 @@ ensure_key() {
     echo "In Vorta, use this SSH key and the complete ssh:// repository URL."
 }
 
+show_help() {
+    cat <<'EOF'
+
+Backup workflow
+---------------
+Vorta handles normal backups, schedules, archives, checks, and restoring files.
+BorgWarehouse stores the encrypted repository on the NAS.
+
+First setup:
+  1. Create/show the SSH key with option 1.
+  2. Assign the public key to a repository in BorgWarehouse.
+  3. Open Vorta from the application menu and add BorgWarehouse's ssh:// URL.
+  4. Select your home directory, exclusions, retention, and schedule in Vorta.
+
+Use option 2 only to restore an entire home while the desktop is logged out.
+Keep the repository URL and encryption passphrase in Bitwarden.
+EOF
+}
+
+backup_menu() {
+    require_user
+    while true; do
+        cat <<'EOF'
+
+Backup
+======
+1. Create or show BorgWarehouse SSH key
+2. Restore complete home
+3. Show setup instructions
+0. Exit
+EOF
+        read -r -p "Choose an option: " choice
+        case "$choice" in
+            1) ensure_key ;;
+            2) restore_home; return ;;
+            3) show_help ;;
+            0) return ;;
+            *) echo "Choose a number from 0 to 3." ;;
+        esac
+    done
+}
+
 restore_home() {
     require_user
     [[ ${XDG_SESSION_TYPE:-tty} == tty ]] || die "Log out and run this from a text console (Ctrl+Alt+F3)."
@@ -68,7 +110,8 @@ restore_home() {
 }
 
 case "${1:-}" in
+    menu) backup_menu ;;
     key) ensure_key ;;
     restore) restore_home ;;
-    *) die "Usage: $0 {key|restore}" ;;
+    *) die "Usage: $0 {menu|key|restore}" ;;
 esac
