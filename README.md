@@ -27,37 +27,41 @@ ujust workstation-virtualization setup
 
 ## Complete home backup
 
-The image includes Borg and borgmatic for encrypted, deduplicated home backups
-to a BorgWarehouse repository on TrueNAS SCALE. Create the repository in
-BorgWarehouse first, then configure this machine once:
+The image includes Vorta and Borg for encrypted, deduplicated home backups to a
+BorgWarehouse repository on TrueNAS SCALE. Vorta is the desktop interface for
+selecting the home directory, setting exclusions and retention, scheduling
+backups, browsing archives, and restoring files.
+
+First generate the machine's BorgWarehouse SSH key:
 
 ```bash
-ujust backup-setup
-ujust backup-now
+ujust backup-key
 ```
 
-Daily backups are enabled as a user systemd timer. Inspect or verify them with:
+Assign the displayed public key to a repository in BorgWarehouse. Then open
+Vorta, add the complete `ssh://` repository URL, select `Home` as the source,
+and configure the schedule and retention in the GUI. Recommended exclusions:
 
-```bash
-ujust backup-list
-ujust backup-check
-```
+- `.cache`
+- `.local/share/Trash`
+- `.local/share/Steam/steamapps/shadercache`
+- `.var/app/*/cache`
+- `.ssh/borgwarehouse`
+- `.ssh/borgwarehouse.pub`
 
-On a fresh installation, use the same username and UID (1000), generate a new
-per-machine SSH key with `ujust backup-setup`, assign that public key to the old
-repository in BorgWarehouse, enter its passphrase, switch to a text console,
-and run:
+Use Vorta for normal restores. For a complete home recovery on a fresh
+installation, use the same username, run `ujust backup-key`, assign the new
+public key to the existing repository, log out of the desktop, switch to a text
+console, and run:
 
 ```bash
 ujust restore-home
 ```
 
-The default backup covers the complete home directory. It only excludes caches,
-trash, Steam shader caches, and Flatpak caches. Keep the repository URL and
-repository passphrase in a password manager. The per-machine SSH key is only an
-access credential and can be replaced from the BorgWarehouse administration UI.
-It is deliberately excluded from the home archive so a restore cannot overwrite
-the new machine's key with the previous machine's key.
+Keep the repository URL and repository passphrase in a password manager. The
+per-machine SSH key is only an access credential and can be replaced from the
+BorgWarehouse administration UI. The recovery command preserves the new
+machine's key even if an older key exists inside the archive.
 
 This repository is meant to be a template for building your own custom [bootc](https://github.com/bootc-dev/bootc) image. This template is the recommended way to make customizations to any image published by the Universal Blue Project.
 
