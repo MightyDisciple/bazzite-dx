@@ -25,6 +25,16 @@ ujust workstation-virtualization kvmfr
 ujust workstation-virtualization setup
 ```
 
+## Applications
+
+Native applications are installed in the image. Additional default system
+Flatpaks are listed in `/usr/share/mightydisciple/flatpaks.list` and installed
+automatically after boot when networking is available. The service records the
+manifest version and otherwise exits immediately on later boots. It retries only
+when installation failed or the manifest changed. It does not replace Bazzite's
+Flatpak selection and never removes applications. After the applications are
+present, restore the home backup to recover their user configuration.
+
 ## Complete home backup
 
 The image includes Vorta and Borg for encrypted, deduplicated home backups to a
