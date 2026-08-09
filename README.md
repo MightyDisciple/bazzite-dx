@@ -23,6 +23,7 @@ available:
 
 - Bitwarden
 - Vivaldi
+- Obsidian
 - LibreOffice
 
 Bazzite's own Flatpak selection remains untouched. The personal list lives in
@@ -39,6 +40,11 @@ Use the single recovery menu for SSH-key setup and complete-home recovery:
 ```bash
 ujust backup
 ```
+
+Creating the BorgWarehouse key also adds a narrowly scoped SSH rule for
+`10.40.0.10:2223`. This makes the repository URL copied from BorgWarehouse
+work directly in Vorta without Bitwarden offering unrelated keys. Forgejo on
+port `2222` is unaffected.
 
 Recommended Vorta exclusions:
 

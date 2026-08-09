@@ -3,6 +3,7 @@ set -euo pipefail
 
 ssh_dir="$HOME/.ssh"
 ssh_key="$ssh_dir/borgwarehouse"
+ssh_config="$ssh_dir/config"
 
 die() {
     echo "Error: $*" >&2
@@ -19,12 +20,27 @@ ensure_key() {
     if [[ ! -f $ssh_key ]]; then
         ssh-keygen -t ed25519 -f "$ssh_key" -N '' -C "borgwarehouse-${USER}@${HOSTNAME}"
     fi
+    touch "$ssh_config"
+    chmod 0600 "$ssh_config"
+    if ! grep -Fq '# BEGIN mightydisciple BorgWarehouse' "$ssh_config"; then
+        cat >>"$ssh_config" <<'EOF'
+
+# BEGIN mightydisciple BorgWarehouse
+# Use only the dedicated Borg key on the BorgWarehouse SSH port.
+# Forgejo on port 2222 and other SSH connections remain untouched.
+Match host 10.40.0.10 exec "test %p = 2223"
+  IdentityFile ~/.ssh/borgwarehouse
+  IdentitiesOnly yes
+# END mightydisciple BorgWarehouse
+EOF
+    fi
     echo
     echo "BorgWarehouse public key:"
     cat "$ssh_key.pub"
     echo
     echo "Assign this key to the machine's repository in BorgWarehouse."
-    echo "In Vorta, use this SSH key and the complete ssh:// repository URL."
+    echo "In Vorta, paste the complete ssh:// repository URL from BorgWarehouse."
+    echo "The dedicated key is selected automatically for 10.40.0.10:2223."
 }
 
 show_help() {
