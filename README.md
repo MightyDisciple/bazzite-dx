@@ -12,6 +12,7 @@ Native packages and integrations:
 
 - Zed instead of Visual Studio Code
 - Niri and Noctalia
+- Mutterbox for running troublesome X11 applications in nested Mutter
 - Looking Glass B7 for Wayland and PipeWire
 - OpenRGB 1.0 RC3 with the Effects plugin
 - CoolerControl and liquidctl
@@ -29,6 +30,21 @@ available:
 Bazzite's own Flatpak selection remains untouched. The personal list lives in
 `system_files/usr/share/mightydisciple/flatpaks.list`; applications are added
 or updated but never removed automatically.
+
+## X11 compatibility with Mutterbox
+
+Some multi-window X11 applications do not work correctly through Niri's
+Xwayland integration. Open **Mutterbox** from the application launcher and
+choose an installed application, or start a command directly:
+
+```bash
+mutterbox COMMAND [ARGUMENTS...]
+mutterbox --desktop DESKTOP-ID
+```
+
+The application runs inside one nested Mutter window. Mutterbox automatically
+removes the duplicate title bar from a large X11 main window while retaining
+the title bars of dialogs and tool windows.
 
 ## Backup and recovery
 
