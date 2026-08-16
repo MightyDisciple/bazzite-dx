@@ -48,6 +48,17 @@ the title bars of dialogs and tool windows. Every Mutterbox receives an
 isolated runtime directory so its portals and display sockets cannot interfere
 with the main desktop session.
 
+Open **Unity (Mutterbox)** from the application launcher to choose a project
+known by Unity Hub. The launcher reads the project's required Editor version
+and starts the matching installation automatically. It can also be used from a
+terminal:
+
+```bash
+mutterbox-unity
+mutterbox-unity /path/to/project
+mutterbox-unity --list
+```
+
 ## Backup and recovery
 
 Vorta manages normal Borg backups, schedules, archives, and file restores.
