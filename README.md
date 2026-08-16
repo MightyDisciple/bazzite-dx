@@ -50,8 +50,10 @@ display sockets cannot interfere with the main desktop session.
 
 Open **Unity (Mutterbox)** from the application launcher to choose a project
 known by Unity Hub. The launcher reads the project's required Editor version
-and starts the matching installation automatically. It can also be used from a
-terminal:
+and starts the matching installation automatically. When Rider is the selected
+external script editor, Unity uses the Mutterbox host bridge so Rider opens as
+a separate Niri window instead of inside the nested display. It can also be
+used from a terminal:
 
 ```bash
 mutterbox-unity
