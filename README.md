@@ -44,7 +44,9 @@ mutterbox --desktop DESKTOP-ID
 
 The application runs inside one nested Mutter window. Mutterbox automatically
 removes the duplicate title bar from a large X11 main window while retaining
-the title bars of dialogs and tool windows.
+the title bars of dialogs and tool windows. Every Mutterbox receives an
+isolated runtime directory so its portals and display sockets cannot interfere
+with the main desktop session.
 
 ## Backup and recovery
 
