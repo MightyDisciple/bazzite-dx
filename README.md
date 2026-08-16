@@ -43,10 +43,10 @@ mutterbox --desktop DESKTOP-ID
 ```
 
 The application runs inside one nested Mutter window. Mutterbox automatically
-removes the duplicate title bar from a large X11 main window while retaining
-the title bars of dialogs and tool windows. Every Mutterbox receives an
-isolated runtime directory so its portals and display sockets cannot interfere
-with the main desktop session.
+removes the duplicate title bar from a large X11 main window and fits it to the
+nested display, while retaining the title bars of dialogs and tool windows.
+Every Mutterbox receives an isolated runtime directory so its portals and
+display sockets cannot interfere with the main desktop session.
 
 Open **Unity (Mutterbox)** from the application launcher to choose a project
 known by Unity Hub. The launcher reads the project's required Editor version
