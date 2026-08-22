@@ -1,7 +1,7 @@
 # MightyDisciple Bazzite DX
 
-Personal workstation image based on the regular NVIDIA GNOME variant,
-`ghcr.io/ublue-os/bazzite-gnome-nvidia:stable`.
+Personal workstation image based on the regular open-module NVIDIA GNOME
+variant, `ghcr.io/ublue-os/bazzite-gnome-nvidia-open:stable`.
 
 It adds the workstation, development, virtualization, and recovery tools used
 across MightyDisciple machines while keeping user data outside the image.
