@@ -136,7 +136,7 @@ GNOME Anaconda ISO.
 
 - `Containerfile`: multistage image definition
 - `build_files/build.sh`: package installation and image validation
-- `ghcr.io/mightydisciple/looking-glass-client:b7-fedora44`: daily prebuilt
+- `ghcr.io/mightydisciple/looking-glass-client-artifact:b7-fedora44`: daily prebuilt
   Looking Glass artifact from the separate `looking-glass-client` repository
 - `system_files/`: files copied into the image
 - `disk_config/`: QCOW2 and GNOME ISO configuration
