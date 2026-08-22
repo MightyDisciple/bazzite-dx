@@ -1,7 +1,7 @@
 # MightyDisciple Bazzite DX
 
-Personal Bazzite DX image based on
-`ghcr.io/ublue-os/bazzite-dx-nvidia-gnome:stable`.
+Personal workstation image based on the regular NVIDIA GNOME variant,
+`ghcr.io/ublue-os/bazzite-gnome-nvidia:stable`.
 
 It adds the workstation, development, virtualization, and recovery tools used
 across MightyDisciple machines while keeping user data outside the image.
@@ -12,8 +12,11 @@ Native packages and integrations:
 
 - Zed instead of Visual Studio Code
 - Niri and Noctalia
+- Labwc for testing a stable nested-compositor replacement for Mutterbox
 - Mutterbox for running troublesome X11 applications in nested Mutter
 - Looking Glass B7 for Wayland and PipeWire
+- Docker CE with Buildx and Compose
+- Bazzite DX's QEMU/libvirt, VFIO, KVMFR, OVMF, and guestfs tooling
 - OpenRGB 1.0 RC3 with the Effects plugin
 - CoolerControl and liquidctl
 - BorgBackup and Vorta
@@ -47,6 +50,10 @@ removes the duplicate title bar from a large X11 main window and fits it to the
 nested display, while retaining the title bars of dialogs and tool windows.
 Every Mutterbox receives an isolated runtime directory so its portals and
 display sockets cannot interfere with the main desktop session.
+
+Labwc is included initially as an experimental building block. Mutterbox stays
+available as the known-working fallback until a Labwc-based wrapper matches its
+application isolation, window handling, audio, portal, and host-bridge behavior.
 
 Open **Unity (Mutterbox)** from the application launcher to choose a project
 known by Unity Hub. The launcher reads the project's required Editor version
@@ -119,7 +126,8 @@ sudo bootc switch ghcr.io/mightydisciple/bazzite-dx:latest
 ```
 
 GitHub Actions builds the image on changes and daily for upstream Bazzite
-updates. The image is signed with the repository's Cosign key.
+updates. Chunkah splits the image into update-friendly layers before it is
+published and signed with the repository's Cosign key.
 
 The disk-image workflow can be started manually to generate a QCOW2 disk or
 GNOME Anaconda ISO.
